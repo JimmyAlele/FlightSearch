@@ -18,7 +18,7 @@ import kotlinx.coroutines.withContext
  */
 class FlightSearchViewModel (airportRepository: AirportRepository): ViewModel() {
 
-    val airRepo: AirportRepository = airportRepository
+    private val airRepo: AirportRepository = airportRepository
 
     private var _airportList = MutableStateFlow(listOf<Airport?>())
     var airportList = _airportList.asStateFlow()
@@ -32,13 +32,19 @@ class FlightSearchViewModel (airportRepository: AirportRepository): ViewModel() 
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 _airportList.update{airRepo.getAirportByNameStream(text).first()}
-                //airportList = _airportList.asStateFlow()
             }
         }
     }
 
-}
+    fun increasePassengersByOne(airport: Airport) {
+        // run database operations inside a coroutine.
+        val newPassengers: Int = airport.passengers.inc()
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) { airRepo.updateAirport(airport.copy(passengers = newPassengers)) }
+        }
+    }
 
+}
 
 
 
