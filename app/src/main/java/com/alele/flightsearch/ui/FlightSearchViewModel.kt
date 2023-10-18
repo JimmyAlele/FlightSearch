@@ -36,12 +36,33 @@ class FlightSearchViewModel (airportRepository: AirportRepository): ViewModel() 
         }
     }
 
-    fun increasePassengersByOne(airport: Airport) {
+    fun increasePassengersByOne(airport: Airport, text: String) {
         // run database operations inside a coroutine.
         val newPassengers: Int = airport.passengers.inc()
         viewModelScope.launch {
             withContext(Dispatchers.IO) { airRepo.updateAirport(airport.copy(passengers = newPassengers)) }
         }
+        // call onSearchTextChange to trigger recomposition
+        onSearchTextChange(text)
+    }
+
+    fun reducePassengersByOne(airport: Airport, text: String) {
+        // run database operations inside a coroutine.
+        val newPassengers: Int = airport.passengers.dec()
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) { airRepo.updateAirport(airport.copy(passengers = newPassengers)) }
+        }
+        // call onSearchTextChange to trigger recomposition
+        onSearchTextChange(text)
+    }
+
+    fun changePassengers (airport: Airport, text: String, it: String) {
+        val newPassengers: Int = it.toIntOrNull() ?: 0
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) { airRepo.updateAirport(airport.copy(passengers = newPassengers)) }
+        }
+        // call onSearchTextChange to trigger recomposition
+        onSearchTextChange(text)
     }
 
 }

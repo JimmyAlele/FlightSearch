@@ -105,9 +105,10 @@ fun FlightSearchApp(
 
             AirportList(
                 airportList = airportList,
+                text = text,
                 onAddPassenger = viewModel::increasePassengersByOne,
-                onRemovePassenger = {  },
-                onPassengerChange = {  },
+                onRemovePassenger = viewModel::reducePassengersByOne,
+                onPassengerChange = viewModel::changePassengers,
                 modifier = Modifier,
             )
         }
@@ -135,10 +136,11 @@ fun FlightSearchTopAppBar(
 @Composable
 private fun AirportList(
     airportList: List<Airport?>,
+    text: String,
     modifier: Modifier = Modifier,
-    onAddPassenger: (Airport) -> Unit,
-    onRemovePassenger: (Airport) -> Unit,
-    onPassengerChange: () -> Unit,
+    onAddPassenger: (Airport, String) -> Unit,
+    onRemovePassenger: (Airport, String) -> Unit,
+    onPassengerChange: (Airport, String, String) -> Unit,
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(2.dp)
@@ -147,6 +149,7 @@ private fun AirportList(
             if (airport != null) {
                 AirportCard(
                     airport = airport,
+                    text = text,
                     onAddPassenger = onAddPassenger,
                     onRemovePassenger = onRemovePassenger,
                     onPassengerChange = onPassengerChange,
@@ -159,9 +162,10 @@ private fun AirportList(
 @Composable
 private fun AirportCard(
     airport: Airport,
-    onAddPassenger: (Airport) -> Unit,
-    onRemovePassenger: (Airport) -> Unit,
-    onPassengerChange: () -> Unit,
+    text: String,
+    onAddPassenger: (Airport, String) -> Unit,
+    onRemovePassenger: (Airport, String) -> Unit,
+    onPassengerChange: (Airport, String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -203,14 +207,14 @@ private fun AirportCard(
             Spacer(modifier.weight(0.5f, fill = true))
             Icon(
                 painter = painterResource(id = R.drawable.baseline_remove_circle_24 ),
-                contentDescription = "Remove plane",
-                modifier = modifier.clickable{}
+                contentDescription = "Remove passenger",
+                modifier = modifier.clickable{onRemovePassenger(airport, text)}
             )
             Spacer(modifier.size(ButtonDefaults.IconSpacing))
             TextField(
                 value = airport.passengers.toString(),
                 onValueChange = {
-
+                    onPassengerChange(airport, text, it)
                 },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -218,8 +222,8 @@ private fun AirportCard(
             )
             Spacer(modifier.size(ButtonDefaults.IconSpacing))
             Icon(imageVector = Icons.Default.AddCircle,
-                contentDescription = "Add item to cart",
-                modifier = modifier.clickable { onAddPassenger(airport) }
+                contentDescription = "Add passenger",
+                modifier = modifier.clickable { onAddPassenger(airport, text) }
             )
             Spacer(modifier.size(ButtonDefaults.IconSpacing))
             Button(
