@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -33,13 +34,20 @@ class FlightSearchViewModel (airportRepository: AirportRepository): ViewModel() 
         _searchText.update { text }
     }
 
-    val airportList = searchText.map{
-            searchText ->
-        airRepo.getAirportByNameStream(searchText) }
+    val airportList = searchText.map{ searchText ->
+        airRepo.getAirportByNameStream(searchText).first()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+        initialValue = null
+    )
+
+
+    val airports = airRepo.getAllAirportStream()
         .stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-        initialValue = airRepo.getAirportByNameStream(searchText.value)
+        initialValue = null
     )
 
     fun increasePassengersByOne(airport: Airport) {

@@ -118,7 +118,7 @@ fun FlightSearchApp(
 
 @Composable
 private fun AirportList(
-    airportList: List<Airport?>,
+    airportList: List<Airport>?,
     modifier: Modifier = Modifier,
     onAddPassenger: (Airport) -> Unit,
     onRemovePassenger: (Airport) -> Unit,
@@ -128,8 +128,8 @@ private fun AirportList(
         verticalArrangement = Arrangement.spacedBy(2.dp),
         modifier = modifier
     ) {
-        items(items = airportList) {airport ->
-            if (airport != null) {
+        if (airportList != null) {
+            items(items = airportList) {airport ->
                 AirportCard(
                     airport = airport,
                     onAddPassenger = onAddPassenger,
@@ -138,8 +138,9 @@ private fun AirportList(
                 )
             }
         }
+        }
     }
-}
+
 
 @Composable
 private fun AirportCard(
