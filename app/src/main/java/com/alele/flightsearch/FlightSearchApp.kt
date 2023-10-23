@@ -105,7 +105,6 @@ fun FlightSearchApp(
 
             AirportList(
                 airportList = airportList,
-                text = text,
                 onAddPassenger = viewModel::increasePassengersByOne,
                 onRemovePassenger = viewModel::reducePassengersByOne,
                 onPassengerChange = viewModel::changePassengers,
@@ -115,57 +114,40 @@ fun FlightSearchApp(
     }
 }
 
-/**
- * App bar to display title
- */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun FlightSearchTopAppBar(
-    title: String,
-    modifier: Modifier = Modifier,
-    scrollBehavior: TopAppBarScrollBehavior? = null,
 
-) {
-    TopAppBar(
-        title = { Text(title) },
-        modifier = modifier,
-        scrollBehavior = scrollBehavior,
-    )
-}
 
 @Composable
 private fun AirportList(
-    airportList: List<Airport?>,
-    text: String,
+    airportList: List<Airport>?,
     modifier: Modifier = Modifier,
-    onAddPassenger: (Airport, String) -> Unit,
-    onRemovePassenger: (Airport, String) -> Unit,
-    onPassengerChange: (Airport, String, String) -> Unit,
+    onAddPassenger: (Airport) -> Unit,
+    onRemovePassenger: (Airport) -> Unit,
+    onPassengerChange: (Airport, String) -> Unit,
 ) {
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(2.dp)
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+        modifier = modifier
     ) {
-        items(items = airportList) {airport ->
-            if (airport != null) {
+        if (airportList != null) {
+            items(items = airportList) {airport ->
                 AirportCard(
                     airport = airport,
-                    text = text,
                     onAddPassenger = onAddPassenger,
                     onRemovePassenger = onRemovePassenger,
                     onPassengerChange = onPassengerChange,
                 )
             }
         }
+        }
     }
-}
+
 
 @Composable
 private fun AirportCard(
     airport: Airport,
-    text: String,
-    onAddPassenger: (Airport, String) -> Unit,
-    onRemovePassenger: (Airport, String) -> Unit,
-    onPassengerChange: (Airport, String, String) -> Unit,
+    onAddPassenger: (Airport) -> Unit,
+    onRemovePassenger: (Airport) -> Unit,
+    onPassengerChange: (Airport, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -208,13 +190,13 @@ private fun AirportCard(
             Icon(
                 painter = painterResource(id = R.drawable.baseline_remove_circle_24 ),
                 contentDescription = "Remove passenger",
-                modifier = modifier.clickable{onRemovePassenger(airport, text)}
+                modifier = modifier.clickable{onRemovePassenger(airport)}
             )
             Spacer(modifier.size(ButtonDefaults.IconSpacing))
             TextField(
                 value = airport.passengers.toString(),
                 onValueChange = {
-                    onPassengerChange(airport, text, it)
+                    onPassengerChange(airport, it)
                 },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -223,7 +205,7 @@ private fun AirportCard(
             Spacer(modifier.size(ButtonDefaults.IconSpacing))
             Icon(imageVector = Icons.Default.AddCircle,
                 contentDescription = "Add passenger",
-                modifier = modifier.clickable { onAddPassenger(airport, text) }
+                modifier = modifier.clickable { onAddPassenger(airport) }
             )
             Spacer(modifier.size(ButtonDefaults.IconSpacing))
             Button(
@@ -248,6 +230,24 @@ private fun AirportCard(
             Spacer(modifier.weight(0.5f, fill = true))
         }
     }
+}
+
+/**
+ * App bar to display title
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FlightSearchTopAppBar(
+    title: String,
+    modifier: Modifier = Modifier,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+
+    ) {
+    TopAppBar(
+        title = { Text(title) },
+        modifier = modifier,
+        scrollBehavior = scrollBehavior,
+    )
 }
 
 @Preview(showBackground = true)

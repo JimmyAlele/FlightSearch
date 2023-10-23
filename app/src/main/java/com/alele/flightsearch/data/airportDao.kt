@@ -20,11 +20,11 @@ interface AirportDao {
     suspend fun delete(airport: Airport)
 
     @Query("SELECT * from airport ORDER BY passengers DESC")
-    fun getAllAirport(): Flow<List<Airport?>>
+    fun getAllAirport(): Flow<List<Airport>?>
 
     @Query("SELECT * from airport WHERE id = :id")
     fun getAirport(id: Int): Flow<Airport?>
 
-    @Query("SELECT * from airport WHERE name like '%'||:name||'%' OR iata_code like '%'||:name||'%' ORDER BY passengers DESC")
-    fun getAirportByName(name: String): Flow<List<Airport?>>
+    @Query("SELECT * from airport WHERE name like '%'||:name||'%' OR iata_code like '%'||:name||'%' ORDER BY name DESC")
+    fun getAirportByName(name: String): Flow<List<Airport>?>
 }

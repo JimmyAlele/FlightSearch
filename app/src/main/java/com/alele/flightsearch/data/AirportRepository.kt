@@ -9,12 +9,12 @@ interface AirportRepository {
     /**
      * Retrieve all the airports from the the given data source.
      */
-    fun getAllAirportStream(): Flow<List<Airport?>>
+    fun getAllAirportStream(): Flow<List<Airport>?>
 
     /**
      * Retrieve all the airports by name from the the given data source.
      */
-    fun getAirportByNameStream(name: String): Flow<List<Airport?>>
+    fun getAirportByNameStream(name: String): Flow<List<Airport>?>
 
     /**
      * Retrieve airport from the given data source that matches with the [id].
